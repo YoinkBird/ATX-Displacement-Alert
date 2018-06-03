@@ -145,14 +145,25 @@ if(__name__ == '__main__'):
 
 
     # Test the geojson_blockgroup_lut table
+    #+ create from sample
+    #+ dump to file
     # TODO: validate the number of entries
     print_test("geoid LUT - create")
 
     geoid_path="res/samples"
     geoid_path=geoid_path + "/" "block-groups_entries_three.geojson"
+    output_geoid_lut_path = "t/tmp/geoidtest" + "/" + "geoid_lut.json"
+    # create and dump
+    geoid_lut_created = convert_block_groups_geojson_to_geoid_lut(
+             retrieve_json_file(geoid_path, **options),
+             **options)
+    # vvvv no need, verifying from file load vvvv
+    # print(json.dumps( geoid_lut_created ))
+    save_json_file(geoid_lut_created, output_geoid_lut_path, **options)
+    # load and verify
+    print("Loading LUT from file output_geoid_lut_path")
     print(json.dumps(
-        convert_block_groups_geojson_to_geoid_lut(
-            retrieve_json_file(geoid_path, **options), **options)
+        retrieve_json_file(output_geoid_lut_path, **options),
         ))
     # pp.pprint(
     #         convert_block_groups_geojson_to_geoid_lut(
@@ -161,9 +172,8 @@ if(__name__ == '__main__'):
     print_test("geoid LUT - load")
     sample_geod = "480139604021"
     # TODO: load from file
-    geoid_lut =         convert_block_groups_geojson_to_geoid_lut(
-             retrieve_json_file(geoid_path, **options), **options)
-    outpoly = get_polygon_by_geoid( sample_geod, geoid_lut, **options)
+    geoid_lut_loaded = retrieve_json_file(output_geoid_lut_path, **options)
+    outpoly = get_polygon_by_geoid( sample_geod, geoid_lut_loaded, **options)
     pp.pprint( outpoly )
 
 
