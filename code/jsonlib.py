@@ -99,7 +99,9 @@ def convert_block_groups_geojson_to_geoid_lut(geoid_data,**options):
     lut_dict = {}
     for index, feature in enumerate( geoid_data['features'] ):
         geoidval = feature['properties']['GEOID']
-        if ( feature['geometry']['type'] == "Polygon" ):
+        #if ( feature['geometry']['type'] == "Polygon" ):
+        if ( re.match(r"%s" % ".*Polygon.*", feature['geometry']['type']) ):
+
             lut_dict[ geoidval ] = {}
             lut_dict[ geoidval ]['geometry'] = {}
             lut_dict[ geoidval ]['geometry'] = feature['geometry']
@@ -107,7 +109,7 @@ def convert_block_groups_geojson_to_geoid_lut(geoid_data,**options):
             print("ERROR: missing entry Polygon on line %s" % (index))
             print(json.dumps( feature ))
             # TODO: this is bad, throw exception instead
-            system.exit()
+            sys.exit()
             # TODO: placeholder for when proper error handling implemented
             return
     return lut_dict
@@ -147,24 +149,35 @@ if(__name__ == '__main__'):
     # Test the geojson_blockgroup_lut table
     #+ create from sample
     #+ dump to file
+    testdef_geoid_simple=0
     # TODO: validate the number of entries
     print_test("geoid LUT - create")
 
     geoid_path="res/samples"
-    geoid_path=geoid_path + "/" "block-groups_entries_three.geojson"
+    if(testdef_geoid_simple == 1):
+        geoid_path=geoid_path + "/" "block-groups_entries_three.geojson"
+    else:
+        geoid_path=geoid_path + "/" "block-groups.geojson"
     output_geoid_lut_path = "t/tmp/geoidtest" + "/" + "geoid_lut.json"
     # create and dump
+    # debug - file is large!
+    tmpgeoiddata = retrieve_json_file(geoid_path, **options)
+    # ^^^ debug ^^^ 
+    print("status: loaded raw geoid data");
     geoid_lut_created = convert_block_groups_geojson_to_geoid_lut(
-             retrieve_json_file(geoid_path, **options),
+             #retrieve_json_file(geoid_path, **options),
+             tmpgeoiddata,
              **options)
     # vvvv no need, verifying from file load vvvv
     # print(json.dumps( geoid_lut_created ))
+    print("status: dumping to file %s" % (output_geoid_lut_path) );
     save_json_file(geoid_lut_created, output_geoid_lut_path, **options)
     # load and verify
     print("Loading LUT from file output_geoid_lut_path")
-    print(json.dumps(
-        retrieve_json_file(output_geoid_lut_path, **options),
-        ))
+    if(testdef_geoid_simple == 1):
+        print(json.dumps(
+            retrieve_json_file(output_geoid_lut_path, **options),
+            ))
     # pp.pprint(
     #         convert_block_groups_geojson_to_geoid_lut(
     #         retrieve_json_file(geoid_path, **options), **options)
