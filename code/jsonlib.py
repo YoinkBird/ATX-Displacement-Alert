@@ -150,7 +150,7 @@ if(__name__ == '__main__'):
     #+ create from sample
     #+ dump to file
     testdef_geoid_simple=0
-    # TODO: validate the number of entries
+    opt_generate_lut_file=0
     print_test("geoid LUT - create")
 
     geoid_path="res/samples"
@@ -159,19 +159,23 @@ if(__name__ == '__main__'):
     else:
         geoid_path=geoid_path + "/" "block-groups.geojson"
     output_geoid_lut_path = "t/tmp/geoidtest" + "/" + "geoid_lut.json"
-    # create and dump
-    # debug - file is large!
-    tmpgeoiddata = retrieve_json_file(geoid_path, **options)
-    # ^^^ debug ^^^ 
-    print("status: loaded raw geoid data");
-    geoid_lut_created = convert_block_groups_geojson_to_geoid_lut(
-             #retrieve_json_file(geoid_path, **options),
-             tmpgeoiddata,
-             **options)
-    # vvvv no need, verifying from file load vvvv
-    # print(json.dumps( geoid_lut_created ))
-    print("status: dumping to file %s" % (output_geoid_lut_path) );
-    save_json_file(geoid_lut_created, output_geoid_lut_path, **options)
+    if( opt_generate_lut_file == 1 ):
+        # TODO: validate the number of entries
+        # create and dump
+        # debug - file is large!
+        tmpgeoiddata = retrieve_json_file(geoid_path, **options)
+        # ^^^ debug ^^^ 
+        print("status: loaded raw geoid data");
+        geoid_lut_created = convert_block_groups_geojson_to_geoid_lut(
+                 #retrieve_json_file(geoid_path, **options),
+                 tmpgeoiddata,
+                 **options)
+        # vvvv no need, verifying from file load vvvv
+        # print(json.dumps( geoid_lut_created ))
+        print("status: dumping to file %s" % (output_geoid_lut_path) );
+        save_json_file(geoid_lut_created, output_geoid_lut_path, **options)
+    else:
+        print("SKIPPING ...")
     # load and verify
     print("Loading LUT from file output_geoid_lut_path")
     if(testdef_geoid_simple == 1):
