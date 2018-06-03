@@ -99,6 +99,7 @@ def convert_block_groups_geojson_to_geoid_lut(geoid_data,**options):
     lut_dict = {}
     for index, feature in enumerate( geoid_data['features'] ):
         geoidval = feature['properties']['GEOID']
+        # TODO: pass-through the value for Polygon
         #if ( feature['geometry']['type'] == "Polygon" ):
         if ( re.match(r"%s" % ".*Polygon.*", feature['geometry']['type']) ):
 
@@ -150,6 +151,10 @@ def write_file(htmlpage, filename='output.html'):
   f=open(filename,'w')
   f.write(htmlpage)
   f.close()
+
+def get_score_mock():
+    from random import randint
+    return randint(0, 99)
 
 if(__name__ == '__main__'):
     #print_test()
@@ -253,6 +258,10 @@ if(__name__ == '__main__'):
             # TODO: use proper np.nan
             if( outpoly ):
                 dict_out['properties']['GEOID'] = ser['BlockGroupCode']
+                # TODO: get the score from the DF instead
+                #+ dict_out['properties']['risk_score'] = ser['risk_score']
+                dict_out['properties']['risk_score'] = get_score_mock()
+                # TODO: MultiPolygon !
                 dict_out['geometry']['type'] = "Polygon"
                 dict_out['geometry']["coordinates"] = outpoly
                 features_out.append(dict_out)
