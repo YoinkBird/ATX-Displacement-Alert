@@ -265,8 +265,7 @@ if(__name__ == '__main__'):
                 dict_out['properties']['risk_score'] = get_score_mock()
                 # TODO: MultiPolygon !
                 # dict_out['geometry']['type'] = "Polygon"
-                dict_out['geometry']['type'] = outpoly['type']
-                dict_out['geometry']["coordinates"] = outpoly
+                dict_out['geometry'] = outpoly
                 features_out.append(dict_out)
             # dict approach - didn't work, needed more time to trick pandas
             # data_in.ix[i]['polygram']=outpoly
