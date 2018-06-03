@@ -215,6 +215,8 @@ if(__name__ == '__main__'):
     sample_geod = "480139604021"
     sample_geod = "484530000000"
     sample_geod = "484530013041"
+    # MultiPolygon
+    sample_geod = "480079501001"
     # TODO: load from file
     geoid_lut_loaded = retrieve_json_file(output_geoid_lut_path, **options)
     outpoly = get_polygon_by_geoid( sample_geod, geoid_lut_loaded, **options)
@@ -262,7 +264,8 @@ if(__name__ == '__main__'):
                 #+ dict_out['properties']['risk_score'] = ser['risk_score']
                 dict_out['properties']['risk_score'] = get_score_mock()
                 # TODO: MultiPolygon !
-                dict_out['geometry']['type'] = "Polygon"
+                # dict_out['geometry']['type'] = "Polygon"
+                dict_out['geometry']['type'] = outpoly['type']
                 dict_out['geometry']["coordinates"] = outpoly
                 features_out.append(dict_out)
             # dict approach - didn't work, needed more time to trick pandas
