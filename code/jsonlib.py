@@ -106,8 +106,26 @@ def convert_block_groups_geojson_to_geoid_lut(geoid_data,**options):
         else:
             print("ERROR: missing entry Polygon on line %s" % (index))
             print(json.dumps( feature ))
+            # TODO: this is bad, throw exception instead
             system.exit()
+            # TODO: placeholder for when proper error handling implemented
+            return
     return lut_dict
+
+def get_polygon_by_geoid( target_geoid, geoid_lut,**options):
+    '''
+    Purpose: return polygon definition for a geoid
+    '''
+    if( target_geoid not in geoid_lut ): 
+        print("ERROR: GEOID %s not found in lookup table" % (target_geoid))
+        # TODO: this is bad, throw exception instead
+        system.exit()
+        # TODO: placeholder for when proper error handling implemented
+        return
+    else: 
+        # from convert_block_groups_geojson_to_geoid_lut :
+        #+ lut_dict[ geoidval ]['geometry'] = feature['geometry']
+        return geoid_lut[ target_geoid ]['geometry']
 
 
 
@@ -128,7 +146,7 @@ if(__name__ == '__main__'):
 
     # Test the geojson_blockgroup_lut table
     # TODO: validate the number of entries
-    print_test("geoid LUT")
+    print_test("geoid LUT - create")
 
     geoid_path="res/samples"
     geoid_path=geoid_path + "/" "block-groups_entries_three.geojson"
@@ -140,3 +158,12 @@ if(__name__ == '__main__'):
     #         convert_block_groups_geojson_to_geoid_lut(
     #         retrieve_json_file(geoid_path, **options), **options)
     #             )
+    print_test("geoid LUT - load")
+    sample_geod = "480139604021"
+    # TODO: load from file
+    geoid_lut =         convert_block_groups_geojson_to_geoid_lut(
+             retrieve_json_file(geoid_path, **options), **options)
+    outpoly = get_polygon_by_geoid( sample_geod, geoid_lut, **options)
+    pp.pprint( outpoly )
+
+
