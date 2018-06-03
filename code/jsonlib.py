@@ -126,10 +126,12 @@ if(__name__ == '__main__'):
         ))
 
 
+    # Test the geojson_blockgroup_lut table
+    # TODO: validate the number of entries
     print_test("geoid LUT")
 
     geoid_path="res/samples"
-    geoid_path=geoid_path + "/" "block-groups_firstentry.geojson"
+    geoid_path=geoid_path + "/" "block-groups_entries_three.geojson"
     print(json.dumps(
         convert_block_groups_geojson_to_geoid_lut(
             retrieve_json_file(geoid_path, **options), **options)
