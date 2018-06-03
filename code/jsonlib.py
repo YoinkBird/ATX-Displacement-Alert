@@ -222,26 +222,28 @@ if(__name__ == '__main__'):
         '''
         '''
         features_out = []
-        dict_out = {}
-        dict_out['type'] = "Feature"
-        dict_out['properties'] = {}
-        dict_out['geometry'] = {}
-        #dict_out['geometry']["coordinates"] = {}
         for i,ser in data_in.iterrows():
+            dict_out = {}
+            dict_out['type'] = "Feature"
+            dict_out['properties'] = {}
+            dict_out['geometry'] = {}
+            #dict_out['geometry']["coordinates"] = {}
 #            print(i)
 #            print(ser['BlockGroupCode'])
             outpoly = get_polygon_by_geoid( ser['BlockGroupCode'], geoid_lut_loaded, **options)
+            # skip the unresolved geoids
             # TODO: use proper np.nan
             if( outpoly ):
                 dict_out['properties']['GEOID'] = ser['BlockGroupCode']
                 dict_out['geometry']['type'] = "Polygon"
                 dict_out['geometry']["coordinates"] = outpoly
+                features_out.append(dict_out)
+            # dict approach - didn't work, needed more time to trick pandas
             # data_in.ix[i]['polygram']=outpoly
             #IDK tmpser[i] = outpoly
 #            print("")
-            features_out.append(dict_out)
 
-        save_json_file(dict_out, output_path_for_web_json , **options)
+        save_json_file(features_out,output_path_for_web_json, **options)
         print("")
 
 
