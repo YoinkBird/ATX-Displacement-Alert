@@ -1,6 +1,6 @@
 
 # import numpy as np
-# import pandas as pd
+import pandas as pd
 import json
 import pprint as pp
 import re
@@ -118,10 +118,12 @@ def get_polygon_by_geoid( target_geoid, geoid_lut,**options):
     '''
     Purpose: return polygon definition for a geoid
     '''
+    target_geoid = str(target_geoid)
     if( target_geoid not in geoid_lut ): 
         print("ERROR: GEOID %s not found in lookup table" % (target_geoid))
         # TODO: this is bad, throw exception instead
-        system.exit()
+        #+ for now, just ignoring
+        # sys.exit()
         # TODO: placeholder for when proper error handling implemented
         return
     else: 
@@ -188,9 +190,62 @@ if(__name__ == '__main__'):
     #             )
     print_test("geoid LUT - load")
     sample_geod = "480139604021"
+    sample_geod = "484530000000"
+    sample_geod = "484530013041"
     # TODO: load from file
     geoid_lut_loaded = retrieve_json_file(output_geoid_lut_path, **options)
     outpoly = get_polygon_by_geoid( sample_geod, geoid_lut_loaded, **options)
     pp.pprint( outpoly )
 
+    ######################################## 
+    # Add the polygons to some data
+
+    opt_add_polygons=1
+    print_test("adding polygons to geoid from LUT")
+
+    data_with_geoid_basedir="res/samples"
+    data_with_geoid="ConstructionDataGeocodeATX_py_entries_10.csv"
+    data_with_geoid_path="%s/%s" % (data_with_geoid_basedir, data_with_geoid)
+    output_path_for_web_js="t/tmp/webgentest" + "/" + "out.js"
+    output_path_for_web_json="t/tmp/webgentest" + "/" + "out.json"
+
+    if( opt_add_polygons == 1 ):
+        # load the input data
+        datafile = data_with_geoid_path
+        data_in = pd.read_csv(datafile,header=0)
+
+        # load the polygons
+        # TODO, done above
+
+        # get to it
+        #IDK tmpser = pd.Series( index=data_in.index )
+        '''
+        '''
+        features_out = []
+        dict_out = {}
+        dict_out['type'] = "Feature"
+        dict_out['properties'] = {}
+        dict_out['geometry'] = {}
+        #dict_out['geometry']["coordinates"] = {}
+        for i,ser in data_in.iterrows():
+#            print(i)
+#            print(ser['BlockGroupCode'])
+            outpoly = get_polygon_by_geoid( ser['BlockGroupCode'], geoid_lut_loaded, **options)
+            # TODO: use proper np.nan
+            if( outpoly ):
+                dict_out['properties']['GEOID'] = ser['BlockGroupCode']
+                dict_out['geometry']['type'] = "Polygon"
+                dict_out['geometry']["coordinates"] = outpoly
+            # data_in.ix[i]['polygram']=outpoly
+            #IDK tmpser[i] = outpoly
+#            print("")
+            features_out.append(dict_out)
+
+        save_json_file(dict_out, output_path_for_web_json , **options)
+        print("")
+
+
+    else:
+        print("SKIPPING ...")
+       
 
